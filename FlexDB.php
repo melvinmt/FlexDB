@@ -1,4 +1,6 @@
+..
 <?php
+
 class FlexDB{
 	
 	public static $db;
