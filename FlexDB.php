@@ -1,5 +1,17 @@
-..
 <?php
+/**
+ * FlexDB Kohana Library
+ * A flexible database library which enables you to insert and/or update data in tables and fields that don't exist yet. You can also use this class to dump data arrays into the database without considering which fields do or do not exist (which is not possible with the standard Kohana insert/update method). 
+ * 
+ * This class uses the Kohana Database Query Builder: http://docs.kohanaphp.com/libraries/database/builder
+ *
+ * Although it is possible to call all the methods in this class when initialized, it is recommended to only use the insert() and update() methods when inserting and/or updating data
+ *
+ * @author Melvin Tercan <mt@mediamedics.nl>
+ * @copyright MediaMedics V.o.F. 
+ * @link http://www.mediamedics.nl
+ * @version 0.0.5
+**/
 
 class FlexDB{
 	
