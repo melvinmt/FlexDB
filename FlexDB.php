@@ -1,6 +1,6 @@
 <?php
 /**
- * FlexDB Kohana Library
+ * FlexDB Kohana Library 
  * A flexible database library which enables you to insert and/or update data in tables and fields
  * that don't exist yet. You can also use this class to dump data arrays into the database without
  * considering which fields do or do not exist (which is not possible with the standard Kohana 
