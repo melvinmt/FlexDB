@@ -39,7 +39,7 @@ class FlexDB{
 	
 	/**
 	 * Connects to a database
-	 * 
+	 *  
 	 * @param string $database // uses the database config if specified
 	**/
 	public static function connect($database = NULL){
