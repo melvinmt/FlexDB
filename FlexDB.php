@@ -14,7 +14,7 @@
  * @author Melvin Tercan <mt@mediamedics.nl>
  * @copyright MediaMedics V.o.F. 
  * @link http://www.mediamedics.nl
- * @version 0.0.5
+ * @version 0.0.5 
 **/
 
 class FlexDB{
