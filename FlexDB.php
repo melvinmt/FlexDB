@@ -32,9 +32,9 @@ class FlexDB{
 	public static function instance($connect = NULL){
 		
 		if($connect !== NULL){
-			FlexDB::connect($connect);			
-		}elseif(FlexDB::$db === NULL){
-			FlexDB::connect();	
+			self::connect($connect);			
+		}elseif(self::$db === NULL){
+			self::connect();	
 		}	
 		
 	}
@@ -46,9 +46,9 @@ class FlexDB{
 	**/
 	public static function connect($database = NULL){
 		if($database === NULL){
-			FlexDB::$db = Database::instance();
+			self::$db = Database::instance();
 		}else{
-			FlexDB::$db = Database::instance($database);
+			self::$db = Database::instance($database);
 		}
 	}
 	
@@ -66,27 +66,27 @@ class FlexDB{
 	**/
 	public static function insert($table_name, $data, $restrict = false, $connect = NULL){
 		
-		FlexDB::instance($connect);
+		self::instance($connect);
 		
 		if($restrict === false){
 		
-			if( FlexDB::exists($table_name) === true){
+			if( self::exists($table_name) === true){
 								
-				$fields = FlexDB::fields($table_name);
+				$fields = self::fields($table_name);
 				
 				$diff = array_diff_key($data, $fields);
 				
 				if(count($diff) > 0){
 					
-					FlexDB::alter($table_name, $diff);
+					self::alter($table_name, $diff);
 					
 				}
 				
-				$data = FlexDB::json($data);
+				$data = self::json($data);
 				
-				if( ($query = FlexDB::$db->insert($table_name, $data)) ){
+				if( ($query = self::$db->insert($table_name, $data)) ){
 					
-					FlexDB::$insert_id = $query->insert_id();
+					self::$insert_id = $query->insert_id();
 					
 					return true;
 				
@@ -94,13 +94,13 @@ class FlexDB{
 				
 			}else{
 				
-				FlexDB::create($table_name, $data);
+				self::create($table_name, $data);
 				
-				$data = FlexDB::json($data);
+				$data = self::json($data);
 				
-				if( ($query = FlexDB::$db->insert($table_name, $data)) ) {
+				if( ($query = self::$db->insert($table_name, $data)) ) {
 					
-					FlexDB::$insert_id = $query->insert_id();
+					self::$insert_id = $query->insert_id();
 					
 					return true;
 					
@@ -110,13 +110,13 @@ class FlexDB{
 			
 		}else{
 						
-			$data = FlexDB::json($data);			
+			$data = self::json($data);			
 								
-			$insert_data = FlexDB::match($table_name, $data);
+			$insert_data = self::match($table_name, $data);
 								
-			if( ($query = FlexDB::$db->insert($table_name, $insert_data)) ){
+			if( ($query = self::$db->insert($table_name, $insert_data)) ){
 				
-				FlexDB::$insert_id = $query->insert_id();
+				self::$insert_id = $query->insert_id();
 				
 				return true;
 				
@@ -137,25 +137,25 @@ class FlexDB{
 	**/	
 	public static function update($table_name, $data, $where, $restrict = false, $connect = NULL){
 				
-		FlexDB::instance($connect);
+		self::instance($connect);
 		
 		if($restrict === false){
 
-			if( FlexDB::exists($table_name) === true){
+			if( self::exists($table_name) === true){
 
-				$fields = FlexDB::fields($table_name);
+				$fields = self::fields($table_name);
 
 				$diff = array_diff_key($data, $fields);
 
 				if(count($diff) > 0){
 
-					FlexDB::alter($table_name, $diff);
+					self::alter($table_name, $diff);
 
 				}
 				
-				$data = FlexDB::json($data);
+				$data = self::json($data);
 
-				if( FlexDB::$db->update($table_name, $data, $where) ){
+				if( self::$db->update($table_name, $data, $where) ){
 
 					return true;
 
@@ -165,11 +165,11 @@ class FlexDB{
 
 		}else{
 
-			$data = FlexDB::json($data);
+			$data = self::json($data);
 			
-			$update_data = FlexDB::match($table_name, $data);
+			$update_data = self::match($table_name, $data);
 
-			if( FlexDB::$db->update($table_name, $update_data, $where) ){
+			if( self::$db->update($table_name, $update_data, $where) ){
 
 				return true;
 
@@ -198,7 +198,7 @@ class FlexDB{
 	**/
 	public static function model($table_name, $fields, $engine = 'MyISAM', $charset ='utf8', $connect = NULL){
 		
-		FlexDB::instance($connect);
+		self::instance($connect);
 		
 		$tbl = "CREATE TABLE IF NOT EXISTS `{$table_name}`";
 		$tbl .= "(";
@@ -263,7 +263,7 @@ class FlexDB{
 			$tbl .= "DEFAULT CHARSET=".$charset." ";
 		}
 		
-		if( FlexDB::$db->query($tbl) ){
+		if( self::$db->query($tbl) ){
 			
 			return true;
 			
@@ -279,7 +279,7 @@ class FlexDB{
 	**/
 	public static function show($table_name, $connect = NULL){
 		
-		FlexDB::instance($connect);
+		self::instance($connect);
 		
 		if(is_array($table_name)){
 			foreach ($table_name as $k=>$v){
@@ -295,7 +295,7 @@ class FlexDB{
 		}
 			
 		
-		$fields = FlexDB::$db->query($q)->result_array(false);
+		$fields = self::$db->query($q)->result_array(false);
 		
 		return $fields;
 		
@@ -311,9 +311,9 @@ class FlexDB{
 	**/
 	public static function del($field_name, $table_name, $connect = NULL){
 	
-		FlexDB::instance($connect);
+		self::instance($connect);
 	
-		if( FlexDB::$db->query("ALTER TABLE `{$table_name}` DROP `{$field_name}`") ){
+		if( self::$db->query("ALTER TABLE `{$table_name}` DROP `{$field_name}`") ){
 		
 			return true;
 		
@@ -330,9 +330,9 @@ class FlexDB{
 	**/
 	public static function drop($table_name, $connect = NULL){
 	
-		FlexDB::instance($connect);
+		self::instance($connect);
 	
-		if( FlexDB::$db->query("DROP TABLE `{$table_name}`") ){
+		if( self::$db->query("DROP TABLE `{$table_name}`") ){
 			
 			return true;
 			
@@ -350,17 +350,17 @@ class FlexDB{
 	**/
 	public static function alter($table_name, $array, $connect = NULL){
 	
-		FlexDB::instance($connect);
+		self::instance($connect);
 		
 		foreach ($array as $key => $value){
 			
-			$datatype = FlexDB::setsqltype($value);
-			FlexDB::$db->query("ALTER TABLE `{$table_name}` ADD `{$key}` {$datatype}");
+			$datatype = self::setsqltype($value);
+			self::$db->query("ALTER TABLE `{$table_name}` ADD `{$key}` {$datatype}");
 			
 		}
 		
-		if(isset(FlexDB::$columns[$table_name])){
-			unset(FlexDB::$columns[$table_name]);
+		if(isset(self::$columns[$table_name])){
+			unset(self::$columns[$table_name]);
 		}
 		
 		return true;
@@ -379,11 +379,11 @@ class FlexDB{
 	**/
 	public static function create($table_name, $data, $charset = 'utf8', $storage = 'InnoDB', $connect = NULL){
 		
-		FlexDB::instance($connect);
+		self::instance($connect);
 		
 		foreach ($data as $name => $value){
 			
-			$field[$name] = FlexDB::setsqltype($value);
+			$field[$name] = self::setsqltype($value);
 			
 		}
 		
@@ -402,7 +402,7 @@ class FlexDB{
 		$tbl .= "ENGINE={$storage} ";  
 		$tbl .= "DEFAULT CHARSET={$charset}";
 		
-		if( FlexDB::$db->query($tbl) ){
+		if( self::$db->query($tbl) ){
 			
 			return true;
 			
@@ -419,23 +419,23 @@ class FlexDB{
 	**/
 	public static function exists($table_name, $connect = NULL){
 		
-		FlexDB::instance($connect);
+		self::instance($connect);
 		
-		if(!isset(FlexDB::$table_exists)){
-			FlexDB::$table_exists = array();
+		if(!isset(self::$table_exists)){
+			self::$table_exists = array();
 		}
 		
-		if(in_array($table_name, FlexDB::$table_exists)){
+		if(in_array($table_name, self::$table_exists)){
 			
 			return true;
 			
 		}else{
 			
-			$query = FlexDB::$db->query("SHOW TABLES LIKE '{$table_name}'")->result_array(false);
+			$query = self::$db->query("SHOW TABLES LIKE '{$table_name}'")->result_array(false);
 
 			if( isset($query[0])){
 
-				FlexDB::$table_exists[] = $table_name;
+				self::$table_exists[] = $table_name;
 
 				return true;
 			}
@@ -509,15 +509,15 @@ class FlexDB{
 	**/	
 	public static function fields($table_name, $connect = NULL){
 		
-		FlexDB::instance($connect);
+		self::instance($connect);
 		
-		if(isset(FlexDB::$columns[$table_name])){
+		if(isset(self::$columns[$table_name])){
 			
-			return FlexDB::$columns[$table_name];
+			return self::$columns[$table_name];
 			
 		}else{
 		
-			$query = FlexDB::$db->query("SHOW COLUMNS FROM `{$table_name}`")->result_array(false);
+			$query = self::$db->query("SHOW COLUMNS FROM `{$table_name}`")->result_array(false);
 		
 			foreach ($query as $k => $v){
 
@@ -525,7 +525,7 @@ class FlexDB{
 
 			}
 			
-			FlexDB::$columns[$table_name] = $array;
+			self::$columns[$table_name] = $array;
 			
 			return $array;
 		}
@@ -540,7 +540,7 @@ class FlexDB{
 	**/
 	public static function match($table_name, $data){
 
-		$fields = FlexDB::fields($table_name);
+		$fields = self::fields($table_name);
 		
 		foreach ($fields as $key => $value){
 			if(isset($data[$key])){
@@ -560,9 +560,9 @@ class FlexDB{
 	**/
 	public static function start($connect = NULL){
 		
-		FlexDB::instance($connect);
+		self::instance($connect);
 		
-		FlexDB::$db->query('START TRANSACTION');
+		self::$db->query('START TRANSACTION');
 		
 		return true;
 		
@@ -574,10 +574,10 @@ class FlexDB{
 	**/	
 	public static function commit(){
 		
-		if(FlexDB::$db === NULL){
+		if(self::$db === NULL){
 			return false;
 		}else{
-			FlexDB::$db->query('COMMIT');
+			self::$db->query('COMMIT');
 			return true;	
 		}
 		
@@ -589,10 +589,10 @@ class FlexDB{
 	**/	
 	public static function rollback(){
 		
-		if(FlexDB::$db === NULL){
+		if(self::$db === NULL){
 			return false;
 		}else{
-			FlexDB::$db->query('ROLLBACK');
+			self::$db->query('ROLLBACK');
 			return true;	
 		}
 		
@@ -623,7 +623,7 @@ class FlexDB{
 
 	public static function __callStatic($name, $args){
 
-		FlexDB::instance();
+		self::instance();
 		
 		$this_funcs = array(
 							'select'
@@ -672,7 +672,7 @@ class FlexDB{
 
 		if(in_array($name, $this_funcs)){
 
-			call_user_func_array(array(FlexDB::$db, $name), $args);
+			call_user_func_array(array(self::$db, $name), $args);
 			
 			if(in_array($name, $result_funcs)){
 				return self::$db->result;
@@ -682,7 +682,7 @@ class FlexDB{
 
 		}elseif(in_array($name, $result_mod_funcs)){
 
-			return call_user_func_array(array(FlexDB::$db->result, $name), $args);
+			return call_user_func_array(array(self::$db->result, $name), $args);
 						
 		}else{
 
@@ -694,25 +694,25 @@ class FlexDB{
 	
 	public function get_row($table, $where){
 		
-		FlexDB::instance();
+		self::instance();
 		
 		if(!is_array($where)){
 			$where = array('id' => $where);
 		}
 		
-		return FlexDB::$db->getwhere($table, $where)->single_row();
+		return self::$db->getwhere($table, $where)->single_row();
 	}
 	
 	
 	public function get_value($table, $where, $fieldname){
 		
-		FlexDB::instance();
+		self::instance();
 		
 		if(!is_array($where)){
 			$where = array('id' => $where);
 		}
 		
-		return FlexDB::$db->select($fieldname)->from($table)->where($where)->get()->single_value();
+		return self::$db->select($fieldname)->from($table)->where($where)->get()->single_value();
 	}
 	
 }
