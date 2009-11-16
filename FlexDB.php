@@ -14,13 +14,15 @@
  * @author Melvin Tercan <mt@mediamedics.nl>
  * @copyright MediaMedics V.o.F. 
  * @link http://www.mediamedics.nl
- * @version 0.0.5 
+ * @version 0.1.0 
 **/
-
 class FlexDB{
 	
 	public static $db;
 	public static $insert_id;
+	public static $result;
+	public static $table_exists = array();
+	public static $columns = array();
 	
 	/**
 	 * Checks if there's an connection available, if false, connection will be made
@@ -39,7 +41,7 @@ class FlexDB{
 	
 	/**
 	 * Connects to a database
-	 *  
+	 * 
 	 * @param string $database // uses the database config if specified
 	**/
 	public static function connect($database = NULL){
@@ -69,7 +71,7 @@ class FlexDB{
 		if($restrict === false){
 		
 			if( FlexDB::exists($table_name) === true){
-				
+								
 				$fields = FlexDB::fields($table_name);
 				
 				$diff = array_diff_key($data, $fields);
@@ -120,7 +122,6 @@ class FlexDB{
 				
 			}
 		}	
-			
 	}
 	
 	/**
@@ -269,7 +270,6 @@ class FlexDB{
 		}
 	}
 	
-	
 	/**
 	 * Returns array with fields and corresponding data types of the table
 	 *
@@ -351,12 +351,16 @@ class FlexDB{
 	public static function alter($table_name, $array, $connect = NULL){
 	
 		FlexDB::instance($connect);
-	
+		
 		foreach ($array as $key => $value){
 			
 			$datatype = FlexDB::setsqltype($value);
 			FlexDB::$db->query("ALTER TABLE `{$table_name}` ADD `{$key}` {$datatype}");
 			
+		}
+		
+		if(isset(FlexDB::$columns[$table_name])){
+			unset(FlexDB::$columns[$table_name]);
 		}
 		
 		return true;
@@ -417,11 +421,24 @@ class FlexDB{
 		
 		FlexDB::instance($connect);
 		
-		$query = FlexDB::$db->query("SHOW TABLES LIKE '{$table_name}'")->result_array(false);
+		if(!isset(FlexDB::$table_exists)){
+			FlexDB::$table_exists = array();
+		}
 		
-		if( isset($query[0])){
-		
+		if(in_array($table_name, FlexDB::$table_exists)){
+			
 			return true;
+			
+		}else{
+			
+			$query = FlexDB::$db->query("SHOW TABLES LIKE '{$table_name}'")->result_array(false);
+
+			if( isset($query[0])){
+
+				FlexDB::$table_exists[] = $table_name;
+
+				return true;
+			}
 		}
 		
 	}
@@ -494,16 +511,24 @@ class FlexDB{
 		
 		FlexDB::instance($connect);
 		
-		$query = FlexDB::$db->query("SHOW COLUMNS FROM `{$table_name}`")->result_array(false);
+		if(isset(FlexDB::$columns[$table_name])){
+			
+			return FlexDB::$columns[$table_name];
+			
+		}else{
 		
-		foreach ($query as $k => $v){
+			$query = FlexDB::$db->query("SHOW COLUMNS FROM `{$table_name}`")->result_array(false);
+		
+			foreach ($query as $k => $v){
 
-			$array[$v['Field']] = $v['Field'];
+				$array[$v['Field']] = $v['Field'];
 
+			}
+			
+			FlexDB::$columns[$table_name] = $array;
+			
+			return $array;
 		}
-		
-		return $array;
-		
 	}
 	
 	/**
@@ -594,6 +619,100 @@ class FlexDB{
 		return $data;
 		
 	}
+	
 
+	public static function __callStatic($name, $args){
+
+		FlexDB::instance();
+		
+		$this_funcs = array(
+							'select'
+							, 'from'
+							, 'join'
+							, 'where'
+							, 'orwhere'
+							, 'like'
+							, 'orlike'
+							, 'notlike'
+							, 'ornotlike'
+							, 'regex'
+							, 'orregex'
+							, 'notregex'
+							, 'ornotregex'
+							, 'groupby'
+							, 'having'
+							, 'orderby'
+							, 'limit'
+							, 'offset'
+							, 'set'
+							, 'in'
+							, 'notin'
+							, 'query'
+							, 'get'
+							, 'getwhere'
+							, 'merge'
+							, 'delete'
+						);
+
+		$result_funcs = array(			
+							'query'
+							, 'get'
+							, 'getwhere'
+							, 'merge'
+							, 'delete');
+							
+		$result_mod_funcs = array(
+							'single_value'
+							, 'single_row'
+							, 'success'
+							, 'last_query'
+							, 'count_records'
+							, 'count_last_query'
+						 );
+
+		if(in_array($name, $this_funcs)){
+
+			call_user_func_array(array(FlexDB::$db, $name), $args);
+			
+			if(in_array($name, $result_funcs)){
+				return self::$db->result;
+			}else{
+				return self::$db;
+			}
+
+		}elseif(in_array($name, $result_mod_funcs)){
+
+			return call_user_func_array(array(FlexDB::$db->result, $name), $args);
+						
+		}else{
+
+			return false;
+		}
+
+	}
+	
+	
+	public function get_row($table, $where){
+		
+		FlexDB::instance();
+		
+		if(!is_array($where)){
+			$where = array('id' => $where);
+		}
+		
+		return FlexDB::$db->getwhere($table, $where)->single_row();
+	}
+	
+	
+	public function get_value($table, $where, $fieldname){
+		
+		FlexDB::instance();
+		
+		if(!is_array($where)){
+			$where = array('id' => $where);
+		}
+		
+		return FlexDB::$db->select($fieldname)->from($table)->where($where)->get()->single_value();
+	}
 	
 }
