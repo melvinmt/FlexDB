@@ -620,7 +620,15 @@ class FlexDB{
 		
 	}
 	
-
+	
+	/**
+	 * Call 'fetchall' collector for common Kohana database query methods so you can use FlexDB to start all your database queries
+	 * Examples: FlexDB::getwhere($table, $where); or FlexDB::select('*')->from('table')->where('id', 1)->get();
+	 * REQUIRES: PHP 5.3.0 + (!)
+	 *
+	 * @return returns the result of Kohana Core Database methods
+	**/
+	
 	public static function __callStatic($name, $args){
 
 		self::instance();
@@ -691,6 +699,12 @@ class FlexDB{
 
 	}
 	
+	/**
+	 * Shortcut to retrieve a single row as an associative array from your query
+	 *
+	 * @param string $table table name
+	 * @param array $where where condition (e.g. array('id' => 1 etc.))
+	**/
 	
 	public function get_row($table, $where){
 		
@@ -703,6 +717,13 @@ class FlexDB{
 		return self::$db->getwhere($table, $where)->single_row();
 	}
 	
+	/**
+	 * Shortcut to retrieve a single value from a field from your query
+	 *
+	 * @param string $table table name
+	 * @param array $where where condition (e.g. array('id' => 1 etc.))
+	 * @param string $fieldname field name
+	**/
 	
 	public function get_value($table, $where, $fieldname){
 		
