@@ -9,7 +9,7 @@ class Database extends Database_Core {
 		parent::__construct();
 		
 		$this->driver = new Flexdriver($this->config);
-		
+		  
 	}
 	
 	public function get($table = '', $limit = NULL, $offset = NULL)

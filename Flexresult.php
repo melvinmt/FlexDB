@@ -4,7 +4,7 @@ class Flexresult extends Mysql_Result{
 	
 	public function __construct($result, $link, $object = TRUE, $sql){
 		parent::__construct($result, $link, $object = TRUE, $sql);	
-	}
+	} 
 	
 	public function as_array(){
 		

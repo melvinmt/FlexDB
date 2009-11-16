@@ -32,5 +32,5 @@ class Flexdriver extends Database_Mysql_Driver{
 
 		return new Flexresult(mysql_query($sql, $this->link), $this->link, $this->db_config['object'], $sql);
 	}	
-	
+	 
 }

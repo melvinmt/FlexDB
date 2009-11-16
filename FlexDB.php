@@ -550,7 +550,7 @@ class FlexDB{
 		if(isset($array)){
 			return $array;
 		}
-	}
+	} 
 	
 	/**
 	 * Starts a new database transaction
