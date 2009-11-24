@@ -14,7 +14,7 @@
  * @author Melvin Tercan <mt@mediamedics.nl>
  * @copyright MediaMedics V.o.F. 
  * @link http://www.mediamedics.nl
- * @version 0.1.0 
+ * @version 0.1.1
 **/
 class FlexDB{
 	
@@ -714,7 +714,25 @@ class FlexDB{
 			$where = array('id' => $where);
 		}
 		
-		return self::$db->getwhere($table, $where)->single_row();
+		return self::getwhere($table, $where)->single_row();
+	}
+	
+	/**
+	 * Shortcut to retrieve all rows as an associative array from your query
+	 *
+	 * @param string $table table name
+	 * @param array $where where condition (e.g. array('id' => 1 etc.))
+	**/
+	
+	public function get_rows($table, $where){
+		
+		self::instance();
+		
+		if(!is_array($where)){
+			$where = array('id' => $where);
+		}
+		
+		return self::getwhere($table, $where)->as_array();
 	}
 	
 	/**
@@ -733,7 +751,28 @@ class FlexDB{
 			$where = array('id' => $where);
 		}
 		
-		return self::$db->select($fieldname)->from($table)->where($where)->get()->single_value();
+		return self::select($fieldname)->from($table)->where($where)->get()->single_value();
 	}
+	
+	public function id_exists($table, $id){
+		
+		return self::row_exists($table, $id);
+
+	}
+	
+	public function row_exists($table, $where){
+		
+		self::instance();
+		
+		if(!is_array($where)){
+			$where = array('id' => $where);
+		}
+		
+		if(self::select('id')->getwhere($table, $where)->success()){
+			return true;
+		}else{
+			return false;
+		}
+	}	
 	
 }
