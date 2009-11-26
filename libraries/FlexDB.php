@@ -14,8 +14,12 @@
  * @author Melvin Tercan <mt@mediamedics.nl>
  * @copyright MediaMedics V.o.F. 
  * @link http://www.mediamedics.nl
- * @version 0.1.1
+ * @version 0.2.1
 **/
+define('FLOAT_LENGTH', 11); // default float type length
+define('INT_LENGTH', 11); // default int type length
+define('VARCHAR_LENGTH', 255); // default varchar type length
+
 class FlexDB{
 	
 	public static $db;
@@ -373,11 +377,11 @@ class FlexDB{
 	 * @param string $table_name // database table name
 	 * @param array $data // array('field1' => 'value', ...)
 	 * @param string $charset // charset of the table, default: utf8
-	 * @param string $storage // storage engine of the table, default: InnoDB
+	 * @param string $storage // storage engine of the table, default: MyIsam
 	 * @param string $connect // specify an database other than the default	
 	 * @return boolean // true on success
 	**/
-	public static function create($table_name, $data, $charset = 'utf8', $storage = 'InnoDB', $connect = NULL){
+	public static function create($table_name, $data, $charset = 'utf8', $storage = 'MyIsam', $connect = NULL){
 		
 		self::instance($connect);
 		
@@ -389,7 +393,7 @@ class FlexDB{
 		
 		$tbl = "CREATE TABLE IF NOT EXISTS `{$table_name}`";
 		$tbl .= "(";
-		$tbl .= "`id` int(11) unsigned NOT NULL auto_increment,";
+		$tbl .= "`id` int(".INT_LENGTH.") unsigned NOT NULL auto_increment,";
 		
 			foreach ($field as $name => $type){
 				
@@ -467,11 +471,11 @@ class FlexDB{
 			
 			if( (float)$value != (int)$value ){
 				
-	            return "FLOAT(11) {$null}";
+	            return "FLOAT(".FLOAT_LENGTH.") {$null}";
 	
 	        }else{
 		
-	            return "INT(11) {$null}";
+	            return "INT(".INT_LENGTH.") {$null}";
 	
 	        }
 		
@@ -485,9 +489,9 @@ class FlexDB{
 
 		}elseif(is_string($value)){
 
-			if(strlen($value) <= 255){
+			if(strlen($value) <= VARCHAR_LENGTH){
 
-				return "VARCHAR(255) {$null}";
+				return "VARCHAR(".VARCHAR_LENGTH.") {$null}";
 
 			}else{
 

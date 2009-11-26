@@ -8,8 +8,16 @@ class Database extends Database_Core {
 		
 		parent::__construct();
 		
-		$this->driver = new Flexdriver($this->config);
-		  
+		// Set driver name
+		$driver = 'Flex_'.ucfirst($this->config['connection']['type']).'_Driver';
+
+		// Load the driver
+		if ( ! Kohana::auto_load($driver))
+			throw new Kohana_Database_Exception('core.driver_not_found', $this->config['connection']['type'], get_class($this));
+
+		// Initialize the driver
+		$this->driver = new $driver($this->config);
+		
 	}
 	
 	public function get($table = '', $limit = NULL, $offset = NULL)
