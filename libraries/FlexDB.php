@@ -1,5 +1,4 @@
 <?php
-
 /**
 * FlexDB Kohana Library
 * A flexible database library which enables you to insert and/or update data in tables and fields
@@ -15,7 +14,7 @@
 * @author Melvin Tercan <mt@mediamedics.nl>
 * @copyright MediaMedics V.o.F.
 * @link http://www.mediamedics.nl
-* @version 0.2.1
+* @version 0.2.2
 **/
 
 define('FLOAT_LENGTH', 11);
@@ -720,7 +719,7 @@ class FlexDB{
 			$where = array('id' => $where);
 		}
 		
-		return self::getwhere($table, $where)->single_row();
+		return self::where($where)->limit(1)->get($table)->single_row();
 	}
 	
 	/**
@@ -730,7 +729,7 @@ class FlexDB{
 	 * @param array $where where condition (e.g. array('id' => 1 etc.))
 	**/
 	
-	public function get_rows($table, $where){
+	public function get_rows($table, $where = array()){
 		
 		self::instance();
 		
@@ -757,7 +756,7 @@ class FlexDB{
 			$where = array('id' => $where);
 		}
 		
-		return self::select($fieldname)->from($table)->where($where)->get()->single_value();
+		return self::select($fieldname)->from($table)->where($where)->limit(1)->get()->single_value();
 	}
 	
 	public function id_exists($table, $id){
@@ -774,7 +773,7 @@ class FlexDB{
 			$where = array('id' => $where);
 		}
 		
-		if(self::select('id')->getwhere($table, $where)->success()){
+		if(self::select('id')->where($where)->limit(1)->get($table)->success()){
 			return true;
 		}else{
 			return false;
