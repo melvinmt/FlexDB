@@ -780,4 +780,60 @@ class FlexDB{
 		}
 	}	
 	
+	public function count_rows($table, $where){
+		
+		self::instance();
+		
+		if(!is_array($where)){
+			$where = array('id' => $where);
+		}
+		
+		self::select('SQL_CALC_FOUND_ROWS *')->where($where)->limit(1)->get($table);
+		
+		$count = self::query('SELECT FOUND_ROWS()')->single_value();
+		
+		if($count){
+			return $count;
+		}else{
+			return false;
+		}
+		
+	}
+	
+	public function sum_field($table, $field, $where){
+		
+		self::instance();
+		
+		if(!is_array($where)){
+			$where = array('id' => $where);
+		}
+		
+		$sum = self::select('SUM('.$field.') AS count')->where($where)->limit(1)->get($table)->single_value();
+		
+		if($sum){
+			return $sum;
+		}else{
+			return false;
+		}
+		
+	}
+	
+	public function avg_field($table, $field, $where){
+		
+		self::instance();
+		
+		if(!is_array($where)){
+			$where = array('id' => $where);
+		}
+		
+		$avg = self::select('AVG('.$field.') AS count')->where($where)->limit(1)->get($table)->single_value();
+		
+		if($avg){
+			return $avg;
+		}else{
+			return false;
+		}
+		
+	}
+	
 }
