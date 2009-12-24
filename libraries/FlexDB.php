@@ -20,7 +20,7 @@
 define('FLOAT_LENGTH', 11);
 define('INT_LENGTH', 11);
 define('VARCHAR_LENGTH', 255);
-
+ 
 class FlexDB{
 	
 	public static $db;
